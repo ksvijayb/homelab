@@ -9,7 +9,7 @@ spec:
 
   chart:
     spec:
-      chart: pihole
+      chart: ./charts/media/pihole
       version: "0.2.0"
       sourceRef:
         kind: GitRepository
