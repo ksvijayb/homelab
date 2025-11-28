@@ -39,12 +39,10 @@ spec:
         hostPath: "/srv/dev-disk-by-uuid-5a4e43af-4c67-438d-a426-b7df3322fbe6/appdata/pihole/config"
 
     service:
-      type: ClusterIP
-      port: 80
-      additionalPorts:
-        - name: https
-          port: 443
-          targetPort: 443
+    nodePorts:
+      http: 30080
+      https: 30443
+    type: NodePort
 
     ingress:
       enabled: true
