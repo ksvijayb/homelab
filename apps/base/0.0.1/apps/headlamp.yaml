@@ -1,12 +1,12 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: home-assistant
-  namespace: home
+  name: headlamp
+  namespace: kube-system
 spec:
   chart:
     spec:
-      chart: ./charts/home-assistant
+      chart: ./charts/headlamp
       version: 0.1.0
       sourceRef:
         kind: GitRepository
@@ -14,11 +14,9 @@ spec:
         namespace: flux-system
   interval: 5m
   values:
-    persistence:
-      hostPath: /srv/data/home-assistant
     ingress:
       enabled: true
       hosts:
-        - host: ha.atlas.lan
+        - host: headlamp.atlas.lan
           paths: ["/"]
       ingressClassName: nginx

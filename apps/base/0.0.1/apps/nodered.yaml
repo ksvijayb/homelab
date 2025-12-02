@@ -1,12 +1,13 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: home-assistant
-  namespace: home
+  name: nodered
+  namespace: default
 spec:
   chart:
+    # path to chart inside your git repo
     spec:
-      chart: ./charts/home-assistant
+      chart: ./charts/nodered
       version: 0.1.0
       sourceRef:
         kind: GitRepository
@@ -15,10 +16,10 @@ spec:
   interval: 5m
   values:
     persistence:
-      hostPath: /srv/data/home-assistant
+      hostPath: /srv/data/nodered
     ingress:
       enabled: true
       hosts:
-        - host: ha.atlas.lan
+        - host: nodered.atlas.lan
           paths: ["/"]
       ingressClassName: nginx

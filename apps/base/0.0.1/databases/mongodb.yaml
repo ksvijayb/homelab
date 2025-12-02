@@ -1,0 +1,23 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: mongodb
+  namespace: databases
+spec:
+  chart:
+    spec:
+      chart: mongodb
+      version: 13.20.4 # example version - adjust as needed
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: flux-system
+  interval: 5m
+  values:
+    architecture: standalone
+    persistence:
+      enabled: true
+      storageClass: hostpath
+      size: 20Gi
+      existingClaim: ""
+    resources: {}
