@@ -36,7 +36,7 @@ spec:
     persistence:
       config:
         enabled: true
-        hostPath: "/srv/dev-disk-by-uuid-5a4e43af-4c67-438d-a426-b7df3322fbe6/appdata/pihole/config"
+        hostPath: "/srv/data/appdata/pihole/config"
 
     service:
       nodePorts:
@@ -45,16 +45,8 @@ spec:
       type: NodePort
 
     ingress:
-      enabled: true
-      ingressClassName: traefik
-      annotations:
-        traefik.ingress.kubernetes.io/router.entrypoints: web
-      host: "pihole.atlas"
-      path: /
-      pathType: Prefix
-      tls:
-        enabled: false
-        secretName: ""
+      enabled: false
+      
 
     containerSecurityContext:
           runAsUser: 0
