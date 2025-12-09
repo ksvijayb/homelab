@@ -17,7 +17,6 @@ spec:
         namespace: flux-system
       interval: 1m
 
-  # Inline values patch/override
   values:
 
     labels: "pihole"
@@ -31,30 +30,40 @@ spec:
 
     timezone: Asia/Kolkata
 
+    # DNS requires host network
     hostNetwork: true
+
+    # Override Pi-hole UI port to avoid conflict with Traefik
+    extraEnvVars:
+      - name: WEB_PORT
+        value: "31080"
+      - name: DNSMASQ_LISTENING
+        value: "all"
 
     persistence:
       config:
         enabled: true
         hostPath: "/srv/data/appdata/pihole/config"
 
+    # UI exposed via NodePort
     service:
+      type: NodePort
+      port: 31080          # internal lighttpd port
       nodePorts:
         http: 30080
         https: 30443
-      type: NodePort
 
+    # Ingress disabled
     ingress:
       enabled: false
-      
 
     containerSecurityContext:
-          runAsUser: 0
-          allowPrivilegeEscalation: true
-          capabilities:
-            add:
-              - NET_ADMIN
-              - NET_BIND_SERVICE
-              - NET_RAW
-              - SYS_NICE
-              - SYS_TIME
+      runAsUser: 0
+      allowPrivilegeEscalation: true
+      capabilities:
+        add:
+          - NET_ADMIN
+          - NET_BIND_SERVICE
+          - NET_RAW
+          - SYS_NICE
+          - SYS_TIME
