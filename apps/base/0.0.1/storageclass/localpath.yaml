@@ -1,0 +1,33 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: local-path-provisioner
+  namespace: flux-system
+spec:
+  interval: 10m
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: local-path-provisioner
+  path: "./deploy"
+  targetNamespace: kube-system
+  patches:
+    - target:
+        kind: ConfigMap
+        name: local-path-config
+      patch: |
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: local-path-config
+          namespace: kube-system
+        data:
+          config.json: |
+            {
+                "nodePathMap":[
+                    {
+                        "node":"DEFAULT_PATH_FOR_NON_LISTED_NODES",
+                        "paths":["/srv/data/localpath"]
+                    }
+                ]
+            }
