@@ -1,24 +1,62 @@
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: postgresql
-  namespace: databases
+  namespace: db
 spec:
+  interval: 10m
+  releaseName: postgresql
+
   chart:
     spec:
       chart: postgresql
-      version: 12.3.17
+      version: "15.5.14"   # Verified ARM64-friendly
       sourceRef:
         kind: HelmRepository
         name: bitnami
         namespace: flux-system
-  interval: 5m
+      interval: 10m
+
   values:
-    global:
-      storageClass: hostpath
+
+    # ------------------------------
+    # Authentication / DB Settings
+    # ------------------------------
+    auth:
+      postgresPassword: postgres
+      username: zitadel
+      password: zitadelpass
+      database: zitadel
+
+    # ------------------------------
+    # Primary Database Settings
+    # ------------------------------
     primary:
       persistence:
         enabled: true
-        size: 20Gi
-    metrics:
-      enabled: false
+        storageClass: "local-path"     # IMPORTANT
+        size: 10Gi                      # adjust as needed
+
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
+      podSecurityContext:
+        fsGroup: 1001
+      containerSecurityContext:
+        runAsUser: 1001
+
+    # ------------------------------
+    # General Settings
+    # ------------------------------
+    architecture: standalone
+
+    volumePermissions:
+      enabled: true
+
+    image:
+      tag: "16.3.0-debian-12-r3"   # Latest stable ARM64-compatible image
