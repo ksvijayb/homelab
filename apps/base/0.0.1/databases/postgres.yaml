@@ -10,7 +10,7 @@ spec:
   chart:
     spec:
       chart: postgresql
-      version: "12.12.10"          # ARM64-compatible Bitnami version
+      version: "12.12.10"            # Chart version is OK
       sourceRef:
         kind: HelmRepository
         name: bitnami
@@ -21,7 +21,18 @@ spec:
     global:
       storageClass: "local-path"
 
-    # PostgreSQL authentication
+    # ============================================
+    # MAIN POSTGRESQL IMAGE (YOU REQUESTED THIS)
+    # ============================================
+    image:
+      registry: docker.io
+      repository: bitnami/postgresql
+      tag: "16.3.0-debian-12-r20"     # <-- ARM64-COMPATIBLE POSTGRESQL IMAGE
+      pullPolicy: IfNotPresent
+
+    # ============================================
+    # AUTH / DB CONFIGURATION
+    # ============================================
     auth:
       postgresPassword: postgres
       username: zitadel
@@ -30,11 +41,14 @@ spec:
 
     architecture: standalone
 
+    # ============================================
+    # PRIMARY POD / STORAGE CONFIG
+    # ============================================
     primary:
       persistence:
         enabled: true
-        size: 6Gi
         storageClass: "local-path"
+        size: 6Gi
 
       podSecurityContext:
         fsGroup: 1001
@@ -49,10 +63,13 @@ spec:
           cpu: 500m
           memory: 512Mi
 
-    # ✔ FIXED: ARM64-compatible init image
+    # ============================================
+    # INIT CONTAINER FIX (volumePermissions)
+    # ============================================
     volumePermissions:
       enabled: true
       image:
         registry: docker.io
-        repository: bitnami/os-shell   # ✔ correct image
-        tag: "latest"                  # ✔ confirmed ARM64 supported
+        repository: bitnami/os-shell      # <-- INIT CONTAINER IMAGE
+        tag: "latest"                     # <-- WORKS ON ARM64
+        pullPolicy: IfNotPresent
