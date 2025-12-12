@@ -27,7 +27,7 @@ spec:
     image:
       registry: docker.io
       repository: bitnami/postgresql
-      tag: "16.3.0-debian-12-r20"     # <-- ARM64-COMPATIBLE POSTGRESQL IMAGE
+      tag: "latest"     # <-- ARM64-COMPATIBLE POSTGRESQL IMAGE
       pullPolicy: IfNotPresent
 
     # ============================================
