@@ -23,7 +23,7 @@ spec:
       storageClass: "local-path"
 
     image:
-      tag: "16.3.0-debian-12-r0"   # ARM64 supported
+      tag: "latest"   # ARM64 supported
 
     tls:
       enabled: false
@@ -58,4 +58,4 @@ spec:
       enabled: true
       image:
         repository: bitnami/bitnami-shell
-        tag: "12-debian-12-r16"   # ARM64 WORKS
+        tag: "latest"   # ARM64 WORKS
