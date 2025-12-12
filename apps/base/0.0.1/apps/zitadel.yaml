@@ -1,0 +1,70 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: zitadel
+  namespace: apps
+spec:
+  releaseName: zitadel
+  interval: 10m
+
+  chart:
+    spec:
+      chart: zitadel
+      version: "7.5.0"       # latest stable as of 2025, ARM-safe when DB disabled
+      sourceRef:
+        kind: HelmRepository
+        name: zitadel
+        namespace: flux-system
+
+  values:
+
+    # ===========================
+    # CORE ZITADEL SETTINGS
+    # ===========================
+    zitadel:
+      masterkey: "3cPOX4bvn8kyiVnpsSZcJXJyQLgEUVTn4Qw6t09n3vk="   # 32-byte base64 string
+
+      # Zitadel built-in DB must be disabled — ARM64 incompatible
+      db:
+        enabled: false
+        host: postgresql.db.svc.cluster.local
+        port: 5432
+        user:
+          username: zitadel
+          password: zitadelpass
+        database: zitadel
+        ssl:
+          mode: disable
+
+    # ===========================
+    # EXTERNAL ACCESS SETTINGS
+    # ===========================
+    configmapConfig:
+      ExternalDomain: "zitadel.atlas.lan"
+      ExternalSecure: true
+      ExternalPort: 443
+
+    # ===========================
+    # INGRESS (Traefik)
+    # ===========================
+    ingress:
+      enabled: true
+      className: traefik
+      annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+      hosts:
+        - host: "zitadel.atlas.lan"
+          paths:
+            - path: /
+              pathType: Prefix
+
+      tls:
+        - secretName: zitadel-tls
+          hosts:
+            - "zitadel.atlas.lan"
+
+    # ===========================
+    # SERVICE SETTINGS
+    # ===========================
+    service:
+      type: ClusterIP
