@@ -6,36 +6,43 @@ metadata:
 spec:
   interval: 10m
   releaseName: postgresql
-
   chart:
     spec:
       chart: postgresql
-      version: "15.5.14"   # Verified ARM64-friendly
+      version: "12.12.10"   # WORKING ARM64 version
       sourceRef:
         kind: HelmRepository
         name: bitnami
         namespace: flux-system
-      interval: 10m
 
   values:
 
-    # ------------------------------
-    # Authentication / DB Settings
-    # ------------------------------
+    global:
+      compatibility:
+        openshift: false
+      storageClass: "local-path"
+
+    image:
+      tag: "16.3.0-debian-12-r0"   # ARM64 supported
+
+    tls:
+      enabled: false
+
     auth:
       postgresPassword: postgres
       username: zitadel
       password: zitadelpass
       database: zitadel
 
-    # ------------------------------
-    # Primary Database Settings
-    # ------------------------------
     primary:
       persistence:
         enabled: true
-        storageClass: "local-path"     # IMPORTANT
-        size: 10Gi                      # adjust as needed
+        size: 4Gi
+
+      podSecurityContext:
+        fsGroup: 1001
+      containerSecurityContext:
+        runAsUser: 1001
 
       resources:
         requests:
@@ -45,18 +52,10 @@ spec:
           cpu: 500m
           memory: 512Mi
 
-      podSecurityContext:
-        fsGroup: 1001
-      containerSecurityContext:
-        runAsUser: 1001
-
-    # ------------------------------
-    # General Settings
-    # ------------------------------
+    # FORCE ARM64 compatible images
     architecture: standalone
-
     volumePermissions:
       enabled: true
-
-    image:
-      tag: "16.3.0-debian-12-r3"   # Latest stable ARM64-compatible image
+      image:
+        repository: bitnami/bitnami-shell
+        tag: "12-debian-12-r16"   # ARM64 WORKS
