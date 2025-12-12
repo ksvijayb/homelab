@@ -27,17 +27,24 @@ spec:
     # ======================
     # EXTERNAL POSTGRES CONFIG (CORRECT)
     # ======================
-    config:
-      Database:
-        Postgres:
-          Host: "postgresql.db.svc.cluster.local"
-          Port: 5432
-          User:
-            Username: "zitadel"
-            Password: "zitadelpass"
-          Database: "zitadel"
-          SSL:
-            Mode: disable
+    # ======================
+    # THE REAL DB CONFIG (correct schema)
+    # ======================
+    zitadelConfig: |
+      ExternalDomain: zitadel.atlas.lan
+      ExternalSecure: true
+      ExternalPort: 443
+
+    Database:
+      Postgres:
+        Host: postgresql.db.svc.cluster.local
+        Port: 5432
+        User:
+          Username: zitadel
+          Password: zitadelpass
+        Database: zitadel
+        SSL:
+          Mode: disable
 
     # ======================
     # SERVICE / INGRESS
