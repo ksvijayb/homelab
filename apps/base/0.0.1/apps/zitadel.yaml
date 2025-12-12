@@ -10,7 +10,7 @@ spec:
   chart:
     spec:
       chart: zitadel
-      version: "7.5.0"       # latest stable as of 2025, ARM-safe when DB disabled
+      version: "7.5.0"
       sourceRef:
         kind: HelmRepository
         name: zitadel
@@ -18,35 +18,35 @@ spec:
 
   values:
 
-    # ===========================
-    # CORE ZITADEL SETTINGS
-    # ===========================
+    # ======================
+    # MASTER KEY
+    # ======================
     zitadel:
-      masterkey: "3cPOX4bvn8kyiVnpsSZcJXJyQLgEUVTn4Qw6t09n3vk="   # 32-byte base64 string
+      masterkey: "3cPOX4bvn8kyiVnpsSZcJXJyQLgEUVTn4Qw6t09n3vk="
 
-      # Zitadel built-in DB must be disabled — ARM64 incompatible
-      db:
-        enabled: false
-        host: postgresql.db.svc.cluster.local
-        port: 5432
-        user:
-          username: zitadel
-          password: zitadelpass
-        database: zitadel
-        ssl:
-          mode: disable
+    # ======================
+    # EXTERNAL POSTGRES CONFIG (CORRECT)
+    # ======================
+    config:
+      Database:
+        Postgres:
+          Host: "postgresql.db.svc.cluster.local"
+          Port: 5432
+          User:
+            Username: "zitadel"
+            Password: "zitadelpass"
+          Database: "zitadel"
+          SSL:
+            Mode: disable
 
-    # ===========================
-    # EXTERNAL ACCESS SETTINGS
-    # ===========================
+    # ======================
+    # SERVICE / INGRESS
+    # ======================
     configmapConfig:
       ExternalDomain: "zitadel.atlas.lan"
       ExternalSecure: true
       ExternalPort: 443
 
-    # ===========================
-    # INGRESS (Traefik)
-    # ===========================
     ingress:
       enabled: true
       className: traefik
@@ -57,14 +57,4 @@ spec:
           paths:
             - path: /
               pathType: Prefix
-
-      tls:
-        - secretName: zitadel-tls
-          hosts:
-            - "zitadel.atlas.lan"
-
-    # ===========================
-    # SERVICE SETTINGS
-    # ===========================
-    service:
-      type: ClusterIP
+      tls: []
