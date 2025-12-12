@@ -4,13 +4,13 @@ metadata:
   name: zitadel
   namespace: apps
 spec:
-  interval: 10m
   releaseName: zitadel
+  interval: 10m
 
   chart:
     spec:
       chart: zitadel
-      version: "6.4.0"   # ✔ last version with working external Postgres
+      version: "9.2.0"        # ✔ Zitadel v9
       sourceRef:
         kind: HelmRepository
         name: zitadel
@@ -18,25 +18,39 @@ spec:
 
   values:
 
+    # -------------------------------
+    # Zitadel config (v2 format)
+    # -------------------------------
     zitadel:
       masterkey: "3cPOX4bvn8kyiVnpsSZcJXJyQLgEUVTn4Qw6t09n3vk="
-      replicaCount: 1
 
-    database:
-      type: postgres
-      postgres:
-        host: postgresql.db.svc.cluster.local
-        port: 5432
-        user: zitadel
-        password: zitadelpass
-        database: zitadel
-        sslMode: disable
+    zitadelConfig: |
+      ExternalDomain: zitadel.atlas.lan
+      ExternalSecure: true
+      ExternalPort: 443
 
-    image:
-      registry: ghcr.io
-      repository: zitadel/zitadel
-      tag: "v2.33.5"   # ✔ correct for chart 6.4.0, supports external PG
+      Database:
+        Type: postgres
+        Postgres:
+          Host: postgresql.db.svc.cluster.local
+          Port: 5432
+          User:
+            Username: zitadel
+            Password: zitadelpass
+          Database: zitadel
+          SSL:
+            Mode: disable
 
+      # Required for v9 init job
+      FirstInstance:
+        Org:
+          Name: "atlas"
+        Name: "admin"
+        Domain: "zitadel.atlas.lan"
+
+    # -------------------------------
+    # Ingress (Traefik)
+    # -------------------------------
     ingress:
       enabled: true
       className: traefik
@@ -48,3 +62,9 @@ spec:
             - path: /
               pathType: Prefix
       tls: []
+
+    # -------------------------------
+    # Service
+    # -------------------------------
+    service:
+      type: ClusterIP
