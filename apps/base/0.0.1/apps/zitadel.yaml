@@ -4,8 +4,8 @@ metadata:
   name: zitadel
   namespace: apps
 spec:
-  releaseName: zitadel
   interval: 10m
+  releaseName: zitadel
 
   chart:
     spec:
@@ -18,44 +18,51 @@ spec:
 
   values:
 
+    # =========================
+    # Core Zitadel settings
+    # =========================
     zitadel:
       masterkey: "3cPOX4bvn8kyiVnpsSZcJXJyQLgEUVTn4Qw6t09n3vk="
+      replicaCount: 1
 
-    kubectl:
-      image:
-        registry: docker.io
-        repository: bitnami/kubectl
-        tag: "1.30.4"
-        pullPolicy: IfNotPresent
+    # =========================
+    # Embedded CockroachDB
+    # =========================
+    cockroachdb:
+      enabled: true
+      singleNode: true
 
-    # 🔴 THIS FILE IS WHAT THE INIT JOB READS
+      persistence:
+        enabled: true
+        storageClass: local-path
+        size: 5Gi
+
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          cpu: 1
+          memory: 1Gi
+
+    # =========================
+    # Zitadel config
+    # =========================
     zitadelConfig: |
       ExternalDomain: zitadel.atlas.lan
       ExternalSecure: true
       ExternalPort: 443
 
-      Database:
-        Type: postgres
-        Postgres:
-          Host: postgresql.db.svc.cluster.local
-          Port: 5432
-          User:
-            Username: zitadel
-            Password: zitadelpass
-          Database: zitadel
-          SSL:
-            Mode: disable
-
-      # 🔴 REQUIRED FOR v9+
       FirstInstance:
         Org:
           Name: "atlas"
         User:
           Username: "admin"
           Password: "Admin@123"
-        Machine:
-          Name: "atlas-machine"
 
+    # =========================
+    # Ingress (Traefik)
+    # =========================
     ingress:
       enabled: true
       className: traefik
