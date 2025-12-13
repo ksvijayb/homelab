@@ -21,6 +21,13 @@ spec:
     zitadel:
       masterkey: "3cPOX4bvn8kyiVnpsSZcJXJyQLgEUVTn4Qw6t09n3vk="
 
+    kubectl:
+      image:
+        registry: docker.io
+        repository: bitnami/kubectl
+        tag: "1.30.4"
+        pullPolicy: IfNotPresent
+
     # 🔴 THIS FILE IS WHAT THE INIT JOB READS
     zitadelConfig: |
       ExternalDomain: zitadel.atlas.lan
