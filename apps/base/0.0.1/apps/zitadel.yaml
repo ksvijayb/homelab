@@ -10,7 +10,7 @@ spec:
   chart:
     spec:
       chart: zitadel
-      version: "9.2.0"        # ✔ Zitadel v9
+      version: "9.2.0"
       sourceRef:
         kind: HelmRepository
         name: zitadel
@@ -18,12 +18,10 @@ spec:
 
   values:
 
-    # -------------------------------
-    # Zitadel config (v2 format)
-    # -------------------------------
     zitadel:
       masterkey: "3cPOX4bvn8kyiVnpsSZcJXJyQLgEUVTn4Qw6t09n3vk="
 
+    # 🔴 THIS FILE IS WHAT THE INIT JOB READS
     zitadelConfig: |
       ExternalDomain: zitadel.atlas.lan
       ExternalSecure: true
@@ -41,30 +39,24 @@ spec:
           SSL:
             Mode: disable
 
-      # Required for v9 init job
+      # 🔴 REQUIRED FOR v9+
       FirstInstance:
         Org:
           Name: "atlas"
-        Name: "admin"
-        Domain: "zitadel.atlas.lan"
+        User:
+          Username: "admin"
+          Password: "Admin@123"
+        Machine:
+          Name: "atlas-machine"
 
-    # -------------------------------
-    # Ingress (Traefik)
-    # -------------------------------
     ingress:
       enabled: true
       className: traefik
       annotations:
         traefik.ingress.kubernetes.io/router.entrypoints: websecure
       hosts:
-        - host: "zitadel.atlas.lan"
+        - host: zitadel.atlas.lan
           paths:
             - path: /
               pathType: Prefix
       tls: []
-
-    # -------------------------------
-    # Service
-    # -------------------------------
-    service:
-      type: ClusterIP
