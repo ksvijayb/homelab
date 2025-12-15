@@ -10,20 +10,24 @@ spec:
   chart:
     spec:
       chart: zitadel
-      version: "6.8.0"   # ✅ stable, homelab-safe
+      version: "6.2.0"
       sourceRef:
         kind: HelmRepository
         name: zitadel
         namespace: flux-system
 
   values:
+
+    # =========================
+    # Master Key
+    # =========================
     zitadel:
       masterkey: "3cPOX4bvn8kyiVnpsSZcJXJyQLgEUVTn4Qw6t09n3vk="
 
-    # --------------------------------------------------
-    # Database (external PostgreSQL – WORKS in v6)
-    # --------------------------------------------------
-    database:
+    # =========================
+    # Database (external PostgreSQL)
+    # =========================
+    db:
       type: postgres
       postgres:
         host: postgresql.db.svc.cluster.local
@@ -34,40 +38,46 @@ spec:
         ssl:
           mode: disable
 
-    # --------------------------------------------------
-    # External access
-    # --------------------------------------------------
-    externalDomain: zitadel.atlas.lan
+    # =========================
+    # Init / Setup Configuration
+    # -------------------------
+    # This block defines how Zitadel init job
+    # bootstraps the first instance and admin user.
+    # =========================
+    initConfig:
+      firstInstance:
+        org:
+          name: "atlas"
+        user:
+          username: admin
+          firstname: Admin
+          lastname: User
+          email: admin@atlas.lan
+          password: "Admin@123"
+
+    # =========================
+    # External Access
+    # =========================
+    externalDomain: "zitadel.atlas.lan"
     externalSecure: true
 
-    # --------------------------------------------------
-    # First admin bootstrap (v6 style – SIMPLE)
-    # --------------------------------------------------
-    firstInstance:
-      enabled: true
-      org:
-        name: atlas
-      user:
-        username: admin
-        firstname: Admin
-        lastname: User
-        email: admin@atlas.lan
-        password: Admin@123   # change after first login
-
-    # --------------------------------------------------
+    # =========================
     # Ingress (Traefik)
-    # --------------------------------------------------
+    # =========================
     ingress:
       enabled: true
       className: traefik
       annotations:
         traefik.ingress.kubernetes.io/router.entrypoints: websecure
       hosts:
-        - host: zitadel.atlas.lan
+        - host: "zitadel.atlas.lan"
           paths:
             - path: /
               pathType: Prefix
       tls: []
 
+    # =========================
+    # Service
+    # =========================
     service:
       type: ClusterIP
