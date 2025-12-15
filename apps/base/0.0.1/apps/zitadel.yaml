@@ -10,53 +10,64 @@ spec:
   chart:
     spec:
       chart: zitadel
-      version: "9.2.0"
+      version: "6.8.0"   # ✅ stable, homelab-safe
       sourceRef:
         kind: HelmRepository
         name: zitadel
         namespace: flux-system
 
   values:
-    # -------------------------
-    # Core Zitadel settings
-    # -------------------------
     zitadel:
       masterkey: "3cPOX4bvn8kyiVnpsSZcJXJyQLgEUVTn4Qw6t09n3vk="
 
-      configmapConfig:
-        ExternalDomain: zitadel.atlas.lan
-        ExternalSecure: true
+    # --------------------------------------------------
+    # Database (external PostgreSQL – WORKS in v6)
+    # --------------------------------------------------
+    database:
+      type: postgres
+      postgres:
+        host: postgresql.db.svc.cluster.local
+        port: 5432
+        database: zitadel
+        user: zitadel
+        password: zitadelpass
+        ssl:
+          mode: disable
 
-        FirstInstance:
-          Skip: false
-          Org:
-            Machine:
-              Machine:
-                Name: "IAM Admin"
-                Username: "iam-admin"
-              Pat:
-                ExpirationDate: "2029-01-01T00:00:00Z"
+    # --------------------------------------------------
+    # External access
+    # --------------------------------------------------
+    externalDomain: zitadel.atlas.lan
+    externalSecure: true
 
-    # -------------------------
-    # Embedded CockroachDB
-    # -------------------------
-    cockroachdb:
+    # --------------------------------------------------
+    # First admin bootstrap (v6 style – SIMPLE)
+    # --------------------------------------------------
+    firstInstance:
       enabled: true
-      singleNode: true
+      org:
+        name: atlas
+      user:
+        username: admin
+        firstname: Admin
+        lastname: User
+        email: admin@atlas.lan
+        password: Admin@123   # change after first login
 
-      persistence:
-        enabled: true
-        storageClass: local-path
-        size: 5Gi
-
-    # -------------------------
-    # Ingress
-    # -------------------------
+    # --------------------------------------------------
+    # Ingress (Traefik)
+    # --------------------------------------------------
     ingress:
       enabled: true
       className: traefik
+      annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
       hosts:
         - host: zitadel.atlas.lan
           paths:
             - path: /
               pathType: Prefix
+      tls: []
+
+    service:
+      type: ClusterIP
