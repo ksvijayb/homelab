@@ -21,4 +21,4 @@ spec:
       hosts:
         - host: ha.atlas.lan
           paths: ["/"]
-      ingressClassName: nginx
+      ingressClassName: traefik

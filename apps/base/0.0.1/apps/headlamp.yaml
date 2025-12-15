@@ -19,4 +19,4 @@ spec:
       hosts:
         - host: headlamp.atlas.lan
           paths: ["/"]
-      ingressClassName: nginx
+      ingressClassName: traefik
