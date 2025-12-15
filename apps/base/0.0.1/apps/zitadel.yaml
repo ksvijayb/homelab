@@ -17,16 +17,15 @@ spec:
         namespace: flux-system
 
   values:
-
-    # =========================
-    # Master Key
-    # =========================
+    # -------------------------------------------------
+    # ZITADEL CORE
+    # -------------------------------------------------
     zitadel:
       masterkey: "3cPOX4bvn8kyiVnpsSZcJXJyQLgEUVTn4Qw6t09n3vk="
 
-    # =========================
-    # Database (external PostgreSQL)
-    # =========================
+    # -------------------------------------------------
+    # DATABASE (6.2.0 schema)
+    # -------------------------------------------------
     db:
       type: postgres
       postgres:
@@ -38,16 +37,13 @@ spec:
         ssl:
           mode: disable
 
-    # =========================
-    # Init / Setup Configuration
-    # -------------------------
-    # This block defines how Zitadel init job
-    # bootstraps the first instance and admin user.
-    # =========================
-    initConfig:
+    # -------------------------------------------------
+    # FIRST INSTANCE BOOTSTRAP (6.2.0)
+    # -------------------------------------------------
+    init:
       firstInstance:
         org:
-          name: "atlas"
+          name: atlas
         user:
           username: admin
           firstname: Admin
@@ -55,29 +51,26 @@ spec:
           email: admin@atlas.lan
           password: "Admin@123"
 
-    # =========================
-    # External Access
-    # =========================
-    externalDomain: "zitadel.atlas.lan"
+    # -------------------------------------------------
+    # EXTERNAL ACCESS
+    # -------------------------------------------------
+    externalDomain: zitadel.atlas.lan
     externalSecure: true
 
-    # =========================
-    # Ingress (Traefik)
-    # =========================
+    # -------------------------------------------------
+    # INGRESS (Traefik)
+    # -------------------------------------------------
     ingress:
       enabled: true
       className: traefik
       annotations:
         traefik.ingress.kubernetes.io/router.entrypoints: websecure
       hosts:
-        - host: "zitadel.atlas.lan"
+        - host: zitadel.atlas.lan
           paths:
             - path: /
               pathType: Prefix
       tls: []
 
-    # =========================
-    # Service
-    # =========================
     service:
       type: ClusterIP
