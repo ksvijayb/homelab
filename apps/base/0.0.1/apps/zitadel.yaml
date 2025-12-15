@@ -4,13 +4,12 @@ metadata:
   name: zitadel
   namespace: apps
 spec:
-  interval: 10m
   releaseName: zitadel
+  interval: 10m
 
   chart:
     spec:
       chart: zitadel
-      version: "9.2.0"
       version: "9.2.0"
       sourceRef:
         kind: HelmRepository
@@ -19,40 +18,8 @@ spec:
 
   values:
 
-    # =========================
-    # Core Zitadel settings
-    # =========================
     zitadel:
       masterkey: "3cPOX4bvn8kyiVnpsSZcJXJyQLgEUVTn4Qw6t09n3vk="
-      replicaCount: 1
-
-    # =========================
-    # Embedded CockroachDB
-    # =========================
-    cockroachdb:
-      enabled: true
-      singleNode: true
-
-      persistence:
-        enabled: true
-        storageClass: local-path
-        size: 5Gi
-
-      resources:
-        requests:
-          cpu: 200m
-          memory: 512Mi
-        limits:
-          cpu: 1
-          memory: 1Gi
-
-    # =========================
-    # Zitadel config
-    # =========================
-    zitadelConfig: |
-      ExternalDomain: zitadel.atlas.lan
-      ExternalSecure: true
-      ExternalPort: 443
 
       # ✔ THIS is the correct place
       configmapConfig:
