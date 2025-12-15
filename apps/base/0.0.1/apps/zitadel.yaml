@@ -17,17 +17,21 @@ spec:
         namespace: flux-system
 
   values:
-    # -------------------------------------------------
-    # ZITADEL CORE
-    # -------------------------------------------------
+    # -------------------------
+    # Core
+    # -------------------------
     zitadel:
       masterkey: "3cPOX4bvn8kyiVnpsSZcJXJyQLgEUVTn4Qw6t09n3vk="
 
-    # -------------------------------------------------
-    # DATABASE (6.2.0 schema)
-    # -------------------------------------------------
+    # -------------------------
+    # DATABASE (6.2.0 requires BOTH)
+    # -------------------------
     db:
       type: postgres
+
+      cockroach:
+        enabled: false   # 🔴 REQUIRED, otherwise localhost:26257 is used
+
       postgres:
         host: postgresql.db.svc.cluster.local
         port: 5432
@@ -37,9 +41,9 @@ spec:
         ssl:
           mode: disable
 
-    # -------------------------------------------------
-    # FIRST INSTANCE BOOTSTRAP (6.2.0)
-    # -------------------------------------------------
+    # -------------------------
+    # Init bootstrap
+    # -------------------------
     init:
       firstInstance:
         org:
@@ -51,15 +55,15 @@ spec:
           email: admin@atlas.lan
           password: "Admin@123"
 
-    # -------------------------------------------------
-    # EXTERNAL ACCESS
-    # -------------------------------------------------
+    # -------------------------
+    # External access
+    # -------------------------
     externalDomain: zitadel.atlas.lan
     externalSecure: true
 
-    # -------------------------------------------------
-    # INGRESS (Traefik)
-    # -------------------------------------------------
+    # -------------------------
+    # Ingress
+    # -------------------------
     ingress:
       enabled: true
       className: traefik
