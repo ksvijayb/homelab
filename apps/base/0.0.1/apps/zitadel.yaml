@@ -20,61 +20,33 @@ spec:
     zitadel:
       masterkey: "3cPOX4bvn8kyiVnpsSZcJXJyQLgEUVTn4Qw6t09n3vk="
 
-      # 🔑 THIS WAS MISSING
-      database:
-        postgres:
-          existingSecret: zitadel-db
-          usernameKey: username
-          passwordKey: password
-
-      # Rendered into zitadel-config-yaml
       configmapConfig:
         ExternalDomain: zitadel.atlas.lan
         ExternalSecure: true
-
-        Database:
-          Type: postgres
-          Postgres:
-            Host: postgresql.db.svc.cluster.local
-            Port: 5432
 
         FirstInstance:
           Skip: false
           Org:
             Machine:
               Machine:
-                Name: "Automatically Initialized IAM Admin"
+                Name: "IAM Admin"
                 Username: "iam-admin"
-              MachineKey:
-                ExpirationDate: "2029-01-01T00:00:00Z"
               Pat:
                 ExpirationDate: "2029-01-01T00:00:00Z"
 
-            LoginClient:
-              Machine:
-                Name: "Automatically Initialized IAM Login Client"
-                Username: "login-client"
-              Pat:
-                ExpirationDate: "2029-01-01T00:00:00Z"
-
-        Machine:
-          Identification:
-            Hostname:
-              Enabled: true
-            Webhook:
-              Enabled: false
+    cockroachdb:
+      enabled: true
+      singleNode: true
+      persistence:
+        enabled: true
+        storageClass: local-path
+        size: 5Gi
 
     ingress:
       enabled: true
       className: traefik
-      annotations:
-        traefik.ingress.kubernetes.io/router.entrypoints: websecure
       hosts:
         - host: zitadel.atlas.lan
           paths:
             - path: /
               pathType: Prefix
-      tls: []
-
-    service:
-      type: ClusterIP
