@@ -4,4 +4,4 @@ namespace: apps
 resources:
   - namespace.yaml
   - pihole.yaml
-  - zitadel.yaml
+  #- zitadel.yaml
