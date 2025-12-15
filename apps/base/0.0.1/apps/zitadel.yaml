@@ -11,6 +11,7 @@ spec:
     spec:
       chart: zitadel
       version: "9.2.0"
+      version: "9.2.0"
       sourceRef:
         kind: HelmRepository
         name: zitadel
@@ -53,16 +54,29 @@ spec:
       ExternalSecure: true
       ExternalPort: 443
 
-      FirstInstance:
-        Org:
-          Name: "atlas"
-        User:
-          Username: "admin"
-          Password: "Admin@123"
+      # ✔ THIS is the correct place
+      configmapConfig:
+        ExternalDomain: "zitadel.atlas.lan"
+        ExternalSecure: true
 
-    # =========================
-    # Ingress (Traefik)
-    # =========================
+        Database:
+          Postgres:
+            Host: "postgresql.db.svc.cluster.local"
+            Port: 5432
+
+        # ✔ Only allowed FirstInstance fields
+        FirstInstance:
+          Skip: false
+          Org:
+            Machine:
+              Machine:
+                Username: "iam-admin"
+                Name: "Automatically Initialized IAM Admin"
+              MachineKey:
+                ExpirationDate: "2029-01-01T00:00:00Z"
+              Pat:
+                ExpirationDate: "2029-01-01T00:00:00Z"
+
     ingress:
       enabled: true
       className: traefik
@@ -74,3 +88,6 @@ spec:
             - path: /
               pathType: Prefix
       tls: []
+
+    service:
+      type: ClusterIP
