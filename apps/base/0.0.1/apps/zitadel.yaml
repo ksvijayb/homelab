@@ -17,33 +17,65 @@ spec:
         namespace: flux-system
 
   values:
-
+    # -------------------------------------------------
+    # Core Zitadel settings
+    # -------------------------------------------------
     zitadel:
       masterkey: "3cPOX4bvn8kyiVnpsSZcJXJyQLgEUVTn4Qw6t09n3vk="
 
-      # ✔ THIS is the correct place
+      # -------------------------------------------------
+      # THIS is the ONLY supported config path in v9.x
+      # -------------------------------------------------
       configmapConfig:
-        ExternalDomain: "zitadel.atlas.lan"
+        ExternalDomain: zitadel.atlas.lan
         ExternalSecure: true
 
+        # -------------------------------------------------
+        # Database (MANDATORY Type field)
+        # -------------------------------------------------
         Database:
+          Type: postgres
           Postgres:
-            Host: "postgresql.db.svc.cluster.local"
+            Host: postgresql.db.svc.cluster.local
             Port: 5432
 
-        # ✔ Only allowed FirstInstance fields
+        # -------------------------------------------------
+        # First instance bootstrap (chart-managed)
+        # -------------------------------------------------
         FirstInstance:
           Skip: false
           Org:
+            # Admin machine user (auto-created)
             Machine:
               Machine:
-                Username: "iam-admin"
                 Name: "Automatically Initialized IAM Admin"
+                Username: "iam-admin"
               MachineKey:
                 ExpirationDate: "2029-01-01T00:00:00Z"
               Pat:
                 ExpirationDate: "2029-01-01T00:00:00Z"
 
+            # Login client for OIDC flows
+            LoginClient:
+              Machine:
+                Name: "Automatically Initialized IAM Login Client"
+                Username: "login-client"
+              Pat:
+                ExpirationDate: "2029-01-01T00:00:00Z"
+
+        # -------------------------------------------------
+        # Node identity (safe defaults)
+        # -------------------------------------------------
+        Machine:
+          Identification:
+            Hostname:
+              Enabled: true
+            Webhook:
+              Enabled: false
+
+    # -------------------------------------------------
+    # Ingress (Traefik)
+    # -------------------------------------------------
     ingress:
       enabled: true
       className: traefik
@@ -56,5 +88,8 @@ spec:
               pathType: Prefix
       tls: []
 
+    # -------------------------------------------------
+    # Service
+    # -------------------------------------------------
     service:
       type: ClusterIP
