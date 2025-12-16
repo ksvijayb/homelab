@@ -4,7 +4,7 @@ namespace: apps
 resources:
   - namespace.yaml
   - pihole.yaml
-  #- zitadel.yaml
+  - zitadel.yaml
   #- homeassistant.yaml
   #- headlamp.yaml
-  - guacamole.yaml
+  #- guacamole.yaml

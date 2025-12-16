@@ -2,7 +2,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: guacamole
-  namespace: guacamole
+  namespace: apps
 spec:
   interval: 15m
   chart:
