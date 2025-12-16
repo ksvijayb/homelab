@@ -86,7 +86,7 @@ spec:
       machinekeyWriter:
         image:
           repository: alpine/kubectl
-          tag: "1.33.5"
+          tag: "1.33.4"
           pullPolicy: IfNotPresent
 
     # ==========================================================
