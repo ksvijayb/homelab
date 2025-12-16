@@ -85,8 +85,8 @@ spec:
     setupJob:
       machinekeyWriter:
         image:
-          repository: bitnami/kubectl
-          tag: "1.29.4"
+          repository: alpine/kubectl
+          tag: "1.33.5"
           pullPolicy: IfNotPresent
 
     # ==========================================================
