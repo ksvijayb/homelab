@@ -20,60 +20,54 @@ spec:
     zitadel:
       masterkey: "uWwitDqXzqOgSRx1GxvYpG04xNckF89H"
 
+      # -----------------------------
+      # THIS IS THE CRITICAL FIX
+      # -----------------------------
       configmapConfig:
-        ExternalSecure: true
         ExternalDomain: "zitadel.atlas.lan"
-        TLS:
-          Enabled: false
+        ExternalSecure: true
+
         Database:
+          Type: postgres
           Postgres:
-            Host: "postgresql.db.svc.cluster.local"
+            Host: postgresql.db.svc.cluster.local
             Port: 5432
+            Database: zitadel
+            User:
+              Username: zitadel
+              Password: zitadelpass
+            Admin:
+              Username: postgres
+              Password: postgres
+            SSL:
+              Mode: disable
+
+        FirstInstance:
+          Skip: false
+          Org:
+            Machine:
+              Machine:
+                Username: iam-admin
+                Name: Automatically Initialized IAM Admin
+              MachineKey:
+                ExpirationDate: "2029-01-01T00:00:00Z"
+                Type: 1
+              Pat:
+                ExpirationDate: "2029-01-01T00:00:00Z"
+
+            LoginClient:
+              Machine:
+                Username: login-client
+                Name: Automatically Initialized IAM Login Client
+              Pat:
+                ExpirationDate: "2029-01-01T00:00:00Z"
+
         Machine:
           Identification:
             Hostname:
               Enabled: true
             Webhook:
               Enabled: false
-
-          # # 🔑 Force compose-style startup
-          # command:
-          #   - start-from-init
-          #   - --masterkey
-          #   - uWwitDqXzqOgSRx1GxvYpG04xNckF89H
-
-      # # 🔑 EXACT env vars from docker-compose
-      # extraEnv:
-      #   # -----------------------------
-      #   # PostgreSQL HOST / PORT
-      #   # -----------------------------
-      #   - name: ZITADEL_DATABASE_POSTGRES_HOST
-      #     value: "postgresql.db.svc.cluster.local"
-      #   - name: ZITADEL_DATABASE_POSTGRES_PORT
-      #     value: "5432"
-
-      #   # -----------------------------
-      #   # ADMIN USER (BOOTSTRAP)
-      #   # -----------------------------
-      #   - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
-      #     value: postgres
-      #   - name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD
-      #     value: postgres
-      #   - name: ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE
-      #     value: disable
-
-      #   # -----------------------------
-      #   # APPLICATION USER
-      #   # -----------------------------
-      #   - name: ZITADEL_DATABASE_POSTGRES_USER_USERNAME
-      #     value: zitadel
-      #   - name: ZITADEL_DATABASE_POSTGRES_USER_PASSWORD
-      #     value: zitadelpass
-      #   - name: ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE
-      #     value: disable
-
-      #   - name: ZITADEL_DATABASE_POSTGRES_DATABASE
-      #     value: zitadel
 
     ingress:
       enabled: true
