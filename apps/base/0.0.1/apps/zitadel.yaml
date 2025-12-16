@@ -17,64 +17,63 @@ spec:
         namespace: flux-system
 
   values:
-    # -------------------------
-    # Core
-    # -------------------------
     zitadel:
-      masterkey: "3cPOX4bvn8kyiVnpsSZcJXJyQLgEUVTn4Qw6t09n3vk="
+      masterkey: "uWwitDqXzqOgSRx1GxvYpG04xNckF89H"
 
-    # -------------------------
-    # DATABASE (6.2.0 requires BOTH)
-    # -------------------------
-    db:
-      type: postgres
+    # 🔑 Force compose-style startup
+    command:
+      - start-from-init
+      - --masterkey
+      - uWwitDqXzqOgSRx1GxvYpG04xNckF89H
 
-      cockroach:
-        enabled: false   # 🔴 REQUIRED, otherwise localhost:26257 is used
+    # 🔑 EXACT env vars from docker-compose
+    extraEnv:
+      - name: ZITADEL_EXTERNALDOMAIN
+        value: zitadel.atlas.lan
+      - name: ZITADEL_EXTERNALSECURE
+        value: "false"
+      - name: ZITADEL_TLS_ENABLED
+        value: "false"
 
-      postgres:
-        host: postgresql.db.svc.cluster.local
-        port: 5432
-        database: zitadel
-        user: zitadel
-        password: zitadelpass
-        ssl:
-          mode: disable
+      # Admin DB user (REQUIRED)
+      - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
+        value: postgres
+      - name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD
+        value: postgres
+      - name: ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE
+        value: disable
 
-    # -------------------------
-    # Init bootstrap
-    # -------------------------
-    init:
-      firstInstance:
-        org:
-          name: atlas
-        user:
-          username: admin
-          firstname: Admin
-          lastname: User
-          email: admin@atlas.lan
-          password: "Admin@123"
+      # Application DB user
+      - name: ZITADEL_DATABASE_POSTGRES_USER_USERNAME
+        value: zitadel
+      - name: ZITADEL_DATABASE_POSTGRES_USER_PASSWORD
+        value: zitadel
+      - name: ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE
+        value: disable
 
-    # -------------------------
-    # External access
-    # -------------------------
-    externalDomain: zitadel.atlas.lan
-    externalSecure: true
+      - name: ZITADEL_DATABASE_POSTGRES_HOST
+        value: postgresql.db.svc.cluster.local
+      - name: ZITADEL_DATABASE_POSTGRES_PORT
+        value: "5432"
+      - name: ZITADEL_DATABASE_POSTGRES_DATABASE
+        value: zitadel
 
-    # -------------------------
-    # Ingress
-    # -------------------------
+      # First instance bootstrap
+      - name: ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_MACHINE_USERNAME
+        value: login-client
+      - name: ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_MACHINE_NAME
+        value: Automatically Initialized IAM_LOGIN_CLIENT
+      - name: ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_PAT_EXPIRATIONDATE
+        value: "2029-01-01T00:00:00Z"
+
     ingress:
       enabled: true
       className: traefik
-      annotations:
-        traefik.ingress.kubernetes.io/router.entrypoints: websecure
       hosts:
         - host: zitadel.atlas.lan
           paths:
             - path: /
               pathType: Prefix
-      tls: []
 
     service:
       type: ClusterIP
