@@ -17,12 +17,13 @@ spec:
         namespace: flux-system
 
   values:
+
+    # ==========================================================
+    # ZITADEL CORE CONFIGURATION (WRITTEN TO CONFIGMAP)
+    # ==========================================================
     zitadel:
       masterkey: "uWwitDqXzqOgSRx1GxvYpG04xNckF89H"
 
-      # -----------------------------
-      # THIS IS THE CRITICAL FIX
-      # -----------------------------
       configmapConfig:
         ExternalDomain: "zitadel.atlas.lan"
         ExternalSecure: true
@@ -33,17 +34,26 @@ spec:
             Host: postgresql.db.svc.cluster.local
             Port: 5432
             Database: zitadel
+
+            # Application user
             User:
               Username: zitadel
               Password: zitadelpass
+
+            # Admin user (bootstrap)
             Admin:
               Username: postgres
               Password: postgres
+
             SSL:
               Mode: disable
 
+        # ------------------------------------------------------
+        # FIRST INSTANCE BOOTSTRAP (IAM ADMIN + LOGIN CLIENT)
+        # ------------------------------------------------------
         FirstInstance:
           Skip: false
+
           Org:
             Machine:
               Machine:
@@ -69,6 +79,25 @@ spec:
             Webhook:
               Enabled: false
 
+    # ==========================================================
+    # FIX: SETUP JOB IMAGE (alpine/k8s DOES NOT EXIST)
+    # ==========================================================
+    setupJob:
+      machinekeyWriter:
+        image:
+          repository: bitnami/kubectl
+          tag: "1.29.4"
+          pullPolicy: IfNotPresent
+
+    # ==========================================================
+    # SERVICE
+    # ==========================================================
+    service:
+      type: ClusterIP
+
+    # ==========================================================
+    # INGRESS (TRAEFIK)
+    # ==========================================================
     ingress:
       enabled: true
       className: traefik
@@ -77,6 +106,4 @@ spec:
           paths:
             - path: /
               pathType: Prefix
-
-    service:
-      type: ClusterIP
+      tls: []
