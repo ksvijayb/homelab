@@ -28,43 +28,36 @@ spec:
 
     # 🔑 EXACT env vars from docker-compose
     extraEnv:
-      - name: ZITADEL_EXTERNALDOMAIN
-        value: zitadel.atlas.lan
-      - name: ZITADEL_EXTERNALSECURE
-        value: "false"
-      - name: ZITADEL_TLS_ENABLED
-        value: "false"
+    # -----------------------------
+    # PostgreSQL HOST / PORT
+    # -----------------------------
+    - name: ZITADEL_DATABASE_POSTGRES_HOST
+      value: postgresql.db
+    - name: ZITADEL_DATABASE_POSTGRES_PORT
+      value: "5432"
 
-      # Admin DB user (REQUIRED)
-      - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
-        value: postgres
-      - name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD
-        value: postgres
-      - name: ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE
-        value: disable
+    # -----------------------------
+    # ADMIN USER (BOOTSTRAP)
+    # -----------------------------
+    - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
+      value: postgres
+    - name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD
+      value: postgres
+    - name: ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE
+      value: disable
 
-      # Application DB user
-      - name: ZITADEL_DATABASE_POSTGRES_USER_USERNAME
-        value: zitadel
-      - name: ZITADEL_DATABASE_POSTGRES_USER_PASSWORD
-        value: zitadel
-      - name: ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE
-        value: disable
+    # -----------------------------
+    # APPLICATION USER
+    # -----------------------------
+    - name: ZITADEL_DATABASE_POSTGRES_USER_USERNAME
+      value: zitadel
+    - name: ZITADEL_DATABASE_POSTGRES_USER_PASSWORD
+      value: zitadelpass
+    - name: ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE
+      value: disable
 
-      - name: ZITADEL_DATABASE_POSTGRES_HOST
-        value: postgresql.db.svc.cluster.local
-      - name: ZITADEL_DATABASE_POSTGRES_PORT
-        value: "5432"
-      - name: ZITADEL_DATABASE_POSTGRES_DATABASE
-        value: zitadel
-
-      # First instance bootstrap
-      - name: ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_MACHINE_USERNAME
-        value: login-client
-      - name: ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_MACHINE_NAME
-        value: Automatically Initialized IAM_LOGIN_CLIENT
-      - name: ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_PAT_EXPIRATIONDATE
-        value: "2029-01-01T00:00:00Z"
+    - name: ZITADEL_DATABASE_POSTGRES_DATABASE
+      value: zitadel
 
     ingress:
       enabled: true
