@@ -83,6 +83,8 @@ spec:
     # FIX: SETUP JOB IMAGE (alpine/k8s DOES NOT EXIST)
     # ==========================================================
     setupJob:
+      additionalArgs:
+      - "--init-projections=true"
       machinekeyWriter:
         image:
           repository: alpine/kubectl
