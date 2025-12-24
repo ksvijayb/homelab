@@ -43,7 +43,7 @@ spec:
     persistence:
       config:
         enabled: true
-        hostPath: "/srv/data/appdata/pihole/config"
+        hostPath: "/data/appdata/pihole/config"
 
     # UI exposed via NodePort
     service:
